@@ -1,6 +1,7 @@
 package GUI;
 
-import OpenGL.SimpleBasketBallCourtFrame;
+import OpenGL.BresenhamBasketBallCourt;
+import OpenGL.SimpleBasketBallCourt;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
@@ -44,21 +45,15 @@ public class GUI {
         mainPanel.add(bresenhamBtn);
 
         screen.pack();
-        screen.setSize(540, 65);
+        screen.setSize(400, 65);
         screen.setLayout(new GridBagLayout());
         screen.setVisible(true);
 
     }
 
     private void equationsScreen() {
-        //secondScreen = new JFrame("Basketball court w/Equations");
-        //secondPanel = new JPanel(new GridLayout(2, 1));
 
-    }
-
-    private void bresenhamScreen() {
-
-        secondPanel = new JPanel();
+        secondPanel = new JPanel(new BorderLayout());
 
         // First Row
 
@@ -69,7 +64,7 @@ public class GUI {
 
         firstRow.add(plotEquationBtn);
         firstRow.add(plotBresenhamBtn);
-        secondPanel.add(firstRow);
+        secondPanel.add(firstRow, BorderLayout.NORTH);
 
         // Second Row
 
@@ -79,12 +74,13 @@ public class GUI {
         GLCapabilities capabilities = new GLCapabilities((profile));
 
         glPanel = new GLJPanel(capabilities);
-        SimpleBasketBallCourtFrame simpleBC = new SimpleBasketBallCourtFrame();
+        SimpleBasketBallCourt simpleBC = new SimpleBasketBallCourt();
         glPanel.addGLEventListener(simpleBC);
-        //glPanel.setSize(400, 400);
+        glPanel.setPreferredSize(new Dimension(400, 400));
 
         secondRow.add(glPanel);
-        secondPanel.add(secondRow);
+        secondRow.setPreferredSize(new Dimension(400, 400));
+        secondPanel.add(secondRow, BorderLayout.CENTER);
 
         // Third Row
 
@@ -100,13 +96,68 @@ public class GUI {
         });
 
         thirdRow.add(goBackBtn);
-        secondPanel.add(thirdRow);
+        secondPanel.add(thirdRow, BorderLayout.SOUTH);
+
+        secondScreen = new JFrame("Basketball court w/Equations");
+        secondScreen.add(secondPanel);
+        secondScreen.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        secondScreen.pack();
+        secondScreen.setVisible(true);
+        screen.setVisible(false);
+
+    }
+
+    private void bresenhamScreen() {
+
+        secondPanel = new JPanel(new BorderLayout());
+
+        // First Row
+
+        JPanel firstRow = new JPanel();
+
+        JButton plotEquationBtn = new JButton("Plot line with equation");
+        JButton plotBresenhamBtn = new JButton("Plot line with bresenham");
+
+        firstRow.add(plotEquationBtn);
+        firstRow.add(plotBresenhamBtn);
+        secondPanel.add(firstRow, BorderLayout.NORTH);
+
+        // Second Row
+
+        JPanel secondRow = new JPanel();
+
+        GLProfile profile = GLProfile.get(GLProfile.GL2);
+        GLCapabilities capabilities = new GLCapabilities((profile));
+
+        glPanel = new GLJPanel(capabilities);
+        BresenhamBasketBallCourt simpleBC = new BresenhamBasketBallCourt();
+        glPanel.addGLEventListener(simpleBC);
+        glPanel.setPreferredSize(new Dimension(400, 400));
+
+        secondRow.add(glPanel);
+        secondRow.setPreferredSize(new Dimension(400, 400));
+        secondPanel.add(secondRow, BorderLayout.CENTER);
+
+        // Third Row
+
+        JPanel thirdRow = new JPanel();
+
+        JButton goBackBtn = new JButton("Go Back!");
+
+        goBackBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                secondScreen.setVisible(false);
+                screen.setVisible(true);
+            }
+        });
+
+        thirdRow.add(goBackBtn);
+        secondPanel.add(thirdRow, BorderLayout.SOUTH);
 
         secondScreen = new JFrame("Basketball court w/Bresenham");
         secondScreen.add(secondPanel);
         secondScreen.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         secondScreen.pack();
-        //secondScreen.setSize(540, 540);
         secondScreen.setVisible(true);
         screen.setVisible(false);
     }
