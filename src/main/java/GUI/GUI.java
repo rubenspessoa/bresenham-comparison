@@ -1,7 +1,13 @@
 package GUI;
 
+import OpenGL.SimpleBasketBallCourtFrame;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLJPanel;
+
 import javax.imageio.plugins.jpeg.JPEGHuffmanTable;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -13,17 +19,15 @@ public class GUI {
     private JFrame screen;
     private JPanel mainPanel;
     private JFrame secondScreen;
-    private JPanel secondPanel;
+    private JPanel secondPanel; // Stays in the top of the screen
+    private GLJPanel glPanel; // Remaining space
 
     public void initiate() {
-
         prepareWindow();
         prepareMainPanel();
         prepareEquationsBtn();
         prepareBresenhamBtn();
-        prepareExitBtn();
         showWindow();
-
     }
 
     private void prepareWindow() {
@@ -55,40 +59,39 @@ public class GUI {
         mainPanel.add(bresenhamBtn);
     }
 
-    private void prepareExitBtn() {
-        JButton exitBtn = new JButton("Exit");
-
-        exitBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-
-        mainPanel.add(exitBtn);
-    }
-
     private void prepareMainPanel() {
-        mainPanel = new JPanel();
+        mainPanel = new JPanel(new GridLayout(1,1));
         screen.add(mainPanel);
     }
 
     private void showWindow() {
         screen.pack();
+        screen.setSize(540,100);
+        screen.setLayout(new CardLayout());
         screen.setVisible(true);
     }
 
     private void equationsScreen() {
+        secondScreen = new JFrame("Basketball court w/Equations");
+        //secondPanel = new JPanel(new GridLayout(2, 1));
 
         prepareButtonsOnPlottingScreen();
-        secondScreen = new JFrame("Plotting w/Equations");
         prepareSecondScreen();
         showSecondScreen();
 
     }
 
     private void bresenhamScreen() {
+        secondPanel = new JPanel(new GridLayout(5, 1));
+        secondScreen = new JFrame("basketball court w/Bresenham");
+
         prepareButtonsOnPlottingScreen();
-        secondScreen = new JFrame("Plotting w/Bresenham");
+        prepareGLJPanel();
+
+        SimpleBasketBallCourtFrame simpleBC = new SimpleBasketBallCourtFrame();
+        glPanel.addGLEventListener(simpleBC);
+        glPanel.setSize(400, 400);
+
         prepareSecondScreen();
         showSecondScreen();
     }
@@ -96,7 +99,6 @@ public class GUI {
     private void prepareSecondScreen() {
         secondScreen.add(secondPanel);
         secondScreen.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
     }
 
     private void prepareButtonsOnPlottingScreen() {
@@ -112,11 +114,11 @@ public class GUI {
             }
         });
 
-        secondPanel = new JPanel();
-        secondPanel.add(plotEquationBtn);
-        secondPanel.add(plotBresenhamBtn);
-        secondPanel.add(goBackBtn);
-
+        JPanel firstRow = new JPanel(new GridLayout(1, 3));
+        firstRow.add(plotEquationBtn);
+        firstRow.add(plotBresenhamBtn);
+        firstRow.add(goBackBtn);
+        secondPanel.add(firstRow);
     }
 
     private void showSecondScreen() {
@@ -126,4 +128,13 @@ public class GUI {
         screen.setVisible(false);
     }
 
+    private void prepareGLJPanel() {
+        GLProfile profile = GLProfile.get(GLProfile.GL2);
+        GLCapabilities capabilities = new GLCapabilities((profile));
+
+        JPanel secondRow = new JPanel(new GridLayout(4, 1));
+        glPanel = new GLJPanel(capabilities);
+        secondRow.add(glPanel);
+        secondPanel.add(secondRow);
+    }
 }
